@@ -1,4 +1,5 @@
 import { render, waitFor, fireEvent, getAllByRole  } from '@testing-library/react';
+import App from './App'; 
 import { TicTacToe } from './components/Tictactoe';
 
 // Test suite for TicTacToe component
@@ -80,6 +81,36 @@ describe('<TicTacToe />', () => {
       expect(cell.innerHTML).toBe('');
     });
     expect(getByText('Tic Tac Toe')).toBeInTheDocument();
+  });
+
+  test('starts with the opposite player after a win and reset', () => {
+    const { getAllByRole, getByText } = render(<TicTacToe />);
+
+    // Get all cells
+    const cells = getAllByRole('button');
+    
+    // Simulate a winning scenario for 'X'
+    fireEvent.click(cells[0]); // X
+    fireEvent.click(cells[3]); // O
+    fireEvent.click(cells[1]); // X
+    fireEvent.click(cells[4]); // O
+    fireEvent.click(cells[2]); // X wins
+
+    // Check for winning message for 'X'
+    const congrats = getByText(/Congratulations/);
+    expect(congrats).toBeInTheDocument();
+
+    // Reset the game
+    const resetButton = getByText('Reset');
+    fireEvent.click(resetButton);
+
+    // Simulate the first move of the next game
+    fireEvent.click(cells[3]);
+    fireEvent.click(cells[0]);
+    fireEvent.click(cells[4]);
+    fireEvent.click(cells[1]);
+    fireEvent.click(cells[5]);
+    expect(fireEvent.click(cells[2])).not.toContain('circle.png');
   });
 
 });
